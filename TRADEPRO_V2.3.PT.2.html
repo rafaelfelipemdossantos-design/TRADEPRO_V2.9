@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Calculadora de Performance</title>
+    
+    <!-- --- ÍCONE EMBUTIDO (BASE64) --- -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48cmVjdCB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgcng9IjEwMCIgZmlsbD0iIzBmMTcyYSIvPjxwYXRoIGQ9Ik0xNDQgMzY4aDQ4VjIwOGgtNDh6bTk2IDBoNDhWOTZoLTQ4em05NiAwaDQ4VjI4OGgtNDh6IiBmaWxsPSIjMjJkM2VlIi8+PHBhdGggZD0iTTY0IDQxNmgzODQiIHN0cm9rZT0iIzIyZDNlZSIgc3Ryb2tlLXdpZHRoPSIzMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+PC9zdmc+">
+    <link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48cmVjdCB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgcng9IjEwMCIgZmlsbD0iIzBmMTcyYSIvPjxwYXRoIGQ9Ik0xNDQgMzY4aDQ4VjIwOGgtNDh6bTk2IDBoNDhWOTZoLTQ4em05NiAwaDQ4VjI4OGgtNDh6IiBmaWxsPSIjMjJkM2VlIi8+PHBhdGggZD0iTTY0IDQxNmgzODQiIHN0cm9rZT0iIzIyZDNlZSIgc3Ryb2tlLXdpZHRoPSIzMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+PC9zdmc+">
+
+    <!-- Meta Tags para PWA -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#0f172a">
+
+    <!-- Tailwind CSS (Design) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- React e ReactDOM -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    
+    <!-- Babel -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <style>
+        @keyframes spin-slow { to { transform: rotate(360deg); } }
+        .animate-spin-slow { animation: spin-slow 3s linear infinite; }
+        body { -webkit-tap-highlight-color: transparent; }
+        select { -webkit-appearance: none; -moz-appearance: none; appearance: none; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="bg-[#0f172a] text-white">
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useMemo } = React;
+
+        // --- LISTAS DE MARCAS ---
+        const GENERAL_BRANDS = [
+            "Always", "Pampers", "Downy", "Gillette Masc", "Gillette Fem",
+            "Pantene", "Head & Shoulders", "Aussie", "Herbal Essences",
+            "Deo Gillette", "Old Spice", "Secret", "Oral-B Escovas",
+            "Oral-B Creme Dental", "Outra Marca"
+        ];
+
+        const CKO_BRANDS = [
+            "Gillette Ap. Mach3",
+            "Gillette Carga Mach3",
+            "Gillette Prestobarba 3",
+            "Gillette Vênus",
+            "Oral-B Escovas",
+            "Ampola ou Óleo Pantene"
+        ];
+
+        // --- METAS KBDS 2026 ---
+        const KBDS_TARGETS = [
+            { id: "always_suave", brand: "Always", category: "Versões Suave", target: 70, unit: "cm" },
+            { id: "downy_azul", brand: "Downy", category: "Bloco Azul", target: 50, unit: "cm" },
+            { id: "downy_colorido", brand: "Downy", category: "Bloco Colorido", target: 40, unit: "cm" },
+            { id: "oralb_pastas", brand: "Oral-B", category: "Branqueamento", target: 60, unit: "cm" },
+            { id: "pantene_bond", brand: "Pantene", category: "Bond Repair", target: 20, unit: "cm" },
+            { id: "pantene_top", brand: "Pantene", category: "Top Versões (Bambu/Colag/Biotina)", target: 40, unit: "cm" },
+            { id: "gillette_masc", brand: "Gillette Masc", category: "Sistemas", target: 35, unit: "ganchos" },
+            { id: "venus_fem", brand: "Venus", category: "Sistemas", target: 20, unit: "ganchos" },
+            { id: "custom", brand: "Outra", category: "Personalizado", target: 0, unit: "manual" }
+        ];
+
+        // --- FUNÇÕES AUXILIARES ---
+        const getTimestamp = () => {
+            const now = new Date();
+            const date = now.toLocaleDateString('pt-BR');
+            const time = now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+            return `📅 *Data:* ${date} às ${time}`;
+        };
+
+        const formatSmart = (val, decimals = 1) => {
+            if (val === 0) return "0";
+            return Number(val.toFixed(decimals)).toString();
+        };
+
+        const copyToClipboard = (text, onSuccess) => {
+            const textArea = document.createElement("textarea"); 
+            textArea.value = text; 
+            textArea.style.position = "fixed"; 
+            textArea.style.left = "-9999px"; 
+            document.body.appendChild(textArea); 
+            textArea.focus(); 
+            textArea.select();
+            try { 
+                document.execCommand('copy'); 
+                onSuccess('Relatório copiado!'); 
+            } catch (err) { 
+                console.error(err); 
+            } 
+            document.body.removeChild(textArea);
+        };
+
+        // --- ÍCONES ---
+        const IconWrapper = ({ children, className }) => (
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>{children}</svg>
+        );
+        const PieChart = ({ className }) => <IconWrapper className={className}><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></IconWrapper>;
+        const Target = ({ className }) => <IconWrapper className={className}><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></IconWrapper>;
+        const ShoppingBag = ({ className }) => <IconWrapper className={className}><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></IconWrapper>;
+        const CreditCard = ({ className }) => <IconWrapper className={className}><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></IconWrapper>;
+        const BarChart3 = ({ className }) => <IconWrapper className={className}><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></IconWrapper>;
+        const Ruler = ({ className }) => <IconWrapper className={className}><path d="M21.3 15.3a2.4 2.4 0 0 1 0 3.4l-2.6 2.6a2.4 2.4 0 0 1-3.4 0L2.7 8.7a2.41 2.41 0 0 1 0-3.4l2.6-2.6a2.41 2.41 0 0 1 3.4 0Z"/><path d="m14.5 12.5 2-2"/><path d="m11.5 9.5 2-2"/><path d="m8.5 6.5 2-2"/><path d="m17.5 15.5 2-2"/></IconWrapper>;
+        const Share2 = ({ className }) => <IconWrapper className={className}><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" x2="15.42" y1="13.51" y2="17.49"/><line x1="15.41" x2="8.59" y1="6.51" y2="10.49"/></IconWrapper>;
+        const Info = ({ className }) => <IconWrapper className={className}><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></IconWrapper>;
+        const CheckCircle2 = ({ className }) => <IconWrapper className={className}><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></IconWrapper>;
+        const ChevronDown = ({ className }) => <IconWrapper className={className}><path d="m6 9 6 6 6-6"/></IconWrapper>;
+        const Tag = ({ className }) => <IconWrapper className={className}><path d="M12 2H2v10l9.29 9.29c.94.94 2.48.94 3.42 0l6.58-6.58c.94-.94.94-2.48 0-3.42L12 2Z"/><path d="M7 7h.01"/></IconWrapper>;
+        const AlertTriangle = ({ className }) => <IconWrapper className={className}><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></IconWrapper>;
+        const Store = ({ className }) => <IconWrapper className={className}><rect width="18" height="12" x="3" y="10" rx="2"/><path d="m2 10 3-7h14l3 7"/><path d="M12 22V10"/><path d="M9 22H5"/><path d="M19 22h-4"/></IconWrapper>;
+
+        // --- APP PRINCIPAL ---
+        function App() {
+            const [activeTab, setActiveTab] = useState('cko');
+            const [unitMode, setUnitMode] = useState('cm');
+            const [notification, setNotification] = useState(null);
+
+            const showNotification = (msg) => {
+                setNotification(msg);
+                setTimeout(() => setNotification(null), 3000);
+            };
+
+            return (
+                <div className="min-h-screen bg-[#0f172a] text-white font-sans selection:bg-cyan-500/30 overflow-x-hidden relative flex flex-col">
+                    <div className="fixed top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-0">
+                        <div className="absolute top-[-10%] right-[-5%] w-96 h-96 bg-blue-600/20 rounded-full blur-3xl opacity-50 mix-blend-screen animate-pulse"></div>
+                        <div className="absolute bottom-[-10%] left-[-10%] w-[500px] h-[500px] bg-cyan-600/10 rounded-full blur-3xl opacity-30 mix-blend-screen"></div>
+                    </div>
+
+                    <header className="relative z-10 px-6 pt-8 pb-4">
+                        <h1 className="text-xl font-bold bg-gradient-to-r from-white to-slate-400 bg-clip-text text-transparent leading-tight uppercase">CALCULADORA DE CKO/SOS/MOP/KBDS</h1>
+                        <p className="text-slate-400 text-xs font-medium tracking-wider uppercase mt-1">PAINEL DE DESEMPENHO</p>
+                    </header>
+
+                    {activeTab !== 'cko' && (
+                        <div className="relative z-10 px-4 mb-4 flex justify-center">
+                            <div className="bg-white/5 backdrop-blur-md p-1 rounded-xl border border-white/10 flex gap-1 w-full max-w-xs">
+                                <button onClick={() => setUnitMode('cm')} className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-xs font-bold uppercase tracking-wider transition-all duration-300 ${unitMode === 'cm' ? 'bg-cyan-500 text-white shadow-lg shadow-cyan-500/25' : 'text-slate-400 hover:bg-white/5 hover:text-white'}`}>
+                                    <Ruler className="w-3 h-3" /> Centímetros
+                                </button>
+                                <button onClick={() => setUnitMode('ganchos')} className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-xs font-bold uppercase tracking-wider transition-all duration-300 ${unitMode === 'ganchos' ? 'bg-indigo-500 text-white shadow-lg shadow-indigo-500/25' : 'text-slate-400 hover:bg-white/5 hover:text-white'}`}>
+                                    <div className="rotate-90"><Share2 className="w-3 h-3" /></div> Ganchos
+                                </button>
+                            </div>
+                        </div>
+                    )}
+
+                    <div className="relative z-10 px-4 mb-6 overflow-x-auto no-scrollbar">
+                        <nav className="flex p-1 bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl min-w-max md:min-w-0">
+                            <NavButton id="cko" active={activeTab} onClick={setActiveTab} label="CKO" icon={CreditCard} />
+                            <NavButton id="sos" active={activeTab} onClick={setActiveTab} label="SOS" icon={PieChart} />
+                            <NavButton id="mop" active={activeTab} onClick={setActiveTab} label="MOP" icon={Target} />
+                            <NavButton id="kbds" active={activeTab} onClick={setActiveTab} label="KBDS" icon={ShoppingBag} />
+                        </nav>
+                    </div>
+
+                    <main className="relative z-10 px-4 pb-24 flex-grow">
+                        <div className="transition-all duration-500 ease-out">
+                            {activeTab === 'cko' && <CkoModule onNotify={showNotification} />}
+                            {activeTab === 'sos' && <SosModule unitMode={unitMode} onNotify={showNotification} />}
+                            {activeTab === 'mop' && <MopModule unitMode={unitMode} onNotify={showNotification} />}
+                            {activeTab === 'kbds' && <KbdsModule unitMode={unitMode} onNotify={showNotification} setUnitMode={setUnitMode} />}
+                        </div>
+                    </main>
+
+                    {notification && (
+                        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[60] w-max">
+                            <div className="bg-emerald-500/90 backdrop-blur-md text-white px-4 py-3 rounded-xl shadow-2xl flex items-center gap-3 text-sm font-medium border border-emerald-400/50 animate-bounce">
+                                <CheckCircle2 className="w-4 h-4" />{notification}
+                            </div>
+                        </div>
+                    )}
+                </div>
+            );
+        }
+
+        // --- COMPONENTES ---
+        const NavButton = ({ id, active, onClick, label, icon: Icon }) => (
+            <button onClick={() => onClick(id)} className={`flex-1 min-w-[80px] flex items-center justify-center gap-2 py-3 px-2 rounded-xl text-sm font-medium transition-all duration-300 relative overflow-hidden ${active === id ? 'text-white shadow-lg bg-white/10' : 'text-slate-400 hover:text-white hover:bg-white/5'}`}>
+                <Icon className={`w-4 h-4 ${active === id ? 'scale-110' : 'scale-100'} transition-transform`} /><span className="z-10 relative whitespace-nowrap">{label}</span>
+            </button>
+        );
+
+        const BrandSelect = ({ selected, onChange, options = GENERAL_BRANDS }) => (
+            <div className="relative group mb-4">
+                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-cyan-400"><Tag className="w-4 h-4" /></div>
+                <select value={selected} onChange={(e) => onChange(e.target.value)} className="w-full bg-black/30 border border-cyan-500/30 rounded-xl px-4 pl-10 py-3 text-white text-sm font-medium outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all appearance-none cursor-pointer hover:bg-black/40">
+                    <option value="" disabled>Selecione a Marca...</option>
+                    {options.map(brand => <option key={brand} value={brand} className="bg-slate-800 text-white">{brand}</option>)}
+                </select>
+                <div className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"><ChevronDown className="w-4 h-4" /></div>
+            </div>
+        );
+
+        const SmartInput = ({ label, value, onChange, unit }) => (
+            <div className="relative group">
+                <input type="number" inputMode="decimal" value={value} onChange={(e) => onChange(e.target.value)} placeholder=" " className="peer w-full bg-black/20 border border-white/10 rounded-xl px-4 pt-6 pb-2 text-white text-lg font-medium outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/50 transition-all placeholder-transparent" />
+                <label className="absolute left-4 top-4 text-slate-400 text-xs uppercase tracking-wider transition-all duration-200 peer-placeholder-shown:text-base peer-placeholder-shown:top-3.5 peer-placeholder-shown:capitalize peer-focus:top-1.5 peer-focus:text-xs peer-focus:text-cyan-400 peer-focus:uppercase">{label}</label>
+                <span className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 text-sm font-medium">{unit}</span>
+            </div>
+        );
+
+        const ResultCard = ({ value, suffix, label, description, highlightColor = "text-cyan-400", onCopy, canCopy, status }) => (
+            <div className="relative">
+                <div className="absolute inset-0 bg-gradient-to-r from-blue-600/20 to-purple-600/20 blur-xl -z-10 rounded-full opacity-50" />
+                <div className="bg-[#131c33] border border-white/10 rounded-3xl p-6 flex flex-col items-center text-center shadow-2xl">
+                    <div className="flex justify-between w-full mb-2">
+                        <span className="text-slate-400 text-xs font-bold uppercase tracking-widest">{label}</span>
+                        {status && (
+                            <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold uppercase ${status === 'OK' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-red-500/20 text-red-400 border border-red-500/30'}`}>
+                                {status}
+                            </span>
+                        )}
+                    </div>
+                    <div className="flex items-baseline gap-1 mb-1">
+                        <span className={`text-5xl font-bold tracking-tight ${highlightColor} drop-shadow-[0_0_15px_rgba(6,182,212,0.3)]`}>{value}</span>
+                        <span className="text-xl text-slate-500 font-medium">{suffix}</span>
+                    </div>
+
+                    <p className="text-slate-500 text-sm max-w-[200px] leading-relaxed mb-4">{description}</p>
+                    
+                    {canCopy && (
+                        <div className="mb-6 p-3 bg-white/5 border border-white/10 rounded-xl text-[10px] text-slate-400 leading-tight flex items-start gap-2 text-left animate-in fade-in duration-500">
+                            <AlertTriangle className="w-3 h-3 text-amber-500 shrink-0 mt-0.5" />
+                            <p>Não arredondamos o resultado. Verifique a execução. Se estiver tudo correto, pode prosseguir.</p>
+                        </div>
+                    )}
+
+                    <button onClick={onCopy} disabled={!canCopy} className={`w-full py-3 rounded-xl flex items-center justify-center gap-2 font-semibold text-sm transition-all ${canCopy ? 'bg-white/10 hover:bg-white/20 text-white border border-white/10 shadow-lg hover:shadow-cyan-500/10' : 'bg-white/5 text-slate-600 cursor-not-allowed'}`}>
+                        {canCopy ? <Share2 className="w-4 h-4" /> : <Info className="w-4 h-4" />}
+                        {canCopy ? 'Copiar Relatório' : 'Preencha os dados'}
+                    </button>
+                </div>
+            </div>
+        );
+
+        const DonutChart = ({ percentage, color }) => {
+            const radius = 18;
+            const circumference = 2 * Math.PI * radius;
+            const strokeDashoffset = circumference - (Math.min(percentage, 100) / 100) * circumference;
+            return (
+                <div className="relative w-16 h-16 flex items-center justify-center">
+                    <svg className="w-full h-full rotate-[-90deg]"><circle cx="32" cy="32" r={radius} stroke="currentColor" strokeWidth="4" fill="transparent" className="text-white/5" /><circle cx="32" cy="32" r={radius} stroke={color} strokeWidth="4" fill="transparent" strokeDasharray={circumference} strokeDashoffset={strokeDashoffset} strokeLinecap="round" className="transition-all duration-1000 ease-out" /></svg>
+                    <div className="absolute text-[10px] font-bold text-white tabular-nums">{percentage > 0 ? formatSmart(percentage) : '0'}%</div>
+                </div>
+            );
+        };
+
+        const Card = ({ children }) => (
+            <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-6 shadow-xl relative overflow-hidden group">
+                <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+                {children}
+            </div>
+        );
+
+        // --- MÓDULOS ---
+        function CkoModule({ onNotify }) {
+            const [inputs, setInputs] = useState({ presenca: '', total: '' });
+            const [selectedBrands, setSelectedBrands] = useState([]);
+            const [showBrands, setShowBrands] = useState(false);
+            
+            const result = useMemo(() => {
+                const p = parseFloat(inputs.presenca) || 0;
+                const t = parseFloat(inputs.total) || 0;
+                return (t > 0) ? (p / t) * 100 : 0;
+            }, [inputs]);
+
+            const generateReport = () => {
+                if (!inputs.presenca || !inputs.total) return;
+                const brandsText = selectedBrands.length > 0 ? selectedBrands.join(', ') : "Geral";
+                const text = `*Relatório CKO*\n\n🛍 *Marcas:* ${brandsText}\n💳 *CKO com Presença:* ${inputs.presenca} un\n🏪 *Total CKO Loja:* ${inputs.total} un\n📊 *Penetração:* ${formatSmart(result)}%\n\n${getTimestamp()}\n\n⚠ _CKO CNPJ não incluso no cálculo_`;
+                copyToClipboard(text, onNotify);
+            };
+
+            return (
+                <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                    <Card>
+                        <div className="flex justify-between items-start mb-6"><div><h2 className="text-lg font-semibold text-white">Penetração CKO</h2><p className="text-slate-400 text-sm">Presença em checkouts</p></div><DonutChart percentage={result} color="#f472b6" /></div>
+                        <div className="mb-6 border border-white/10 rounded-xl overflow-hidden bg-black/20">
+                            <button onClick={() => setShowBrands(!showBrands)} className="w-full flex items-center justify-between p-4 bg-white/5 hover:bg-white/10 transition-colors">
+                                <span className="flex items-center gap-2 text-sm font-semibold text-white tracking-wide"><Tag className="w-4 h-4 text-cyan-400" /> Marcas Presentes {selectedBrands.length > 0 && <span className="bg-pink-500 text-white w-5 h-5 rounded-full text-xs flex items-center justify-center">{selectedBrands.length}</span>}</span>
+                                <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform duration-300 ${showBrands ? 'rotate-180' : ''}`} />
+                            </button>
+                            {showBrands && (
+                                <div className="p-4 border-t border-white/10 bg-black/20 max-h-[250px] overflow-y-auto no-scrollbar">
+                                    {CKO_BRANDS.map(brand => (
+                                        <button key={brand} onClick={() => setSelectedBrands(s => s.includes(brand) ? s.filter(b => b !== brand) : [...s, brand])} className={`w-full flex items-center justify-between p-3 mb-2 rounded-lg border text-xs transition-all ${selectedBrands.includes(brand) ? 'bg-cyan-500/20 border-cyan-500 text-white' : 'bg-black/20 border-white/5 text-slate-400'}`}>
+                                            {brand} {selectedBrands.includes(brand) ? <CheckCircle2 className="w-4 h-4 text-cyan-400" /> : <div className="w-4 h-4 border border-white/10 rounded"></div>}
+                                        </button>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                        <div className="space-y-4"><SmartInput label="CKO Com Presença" value={inputs.presenca} onChange={(v) => setInputs({ ...inputs, presenca: v })} unit="un" /><SmartInput label="Total de CKO Na Loja" value={inputs.total} onChange={(v) => setInputs({ ...inputs, total: v })} unit="un" /></div>
+                    </Card>
+                    <ResultCard value={formatSmart(result)} suffix="%" label="penetração em cko" description="Porcentagem de checkouts da loja que possuem itens analisados." highlightColor="text-pink-400" onCopy={generateReport} canCopy={inputs.presenca && inputs.total} />
+                </div>
+            );
+        }
+
+        function SosModule({ unitMode, onNotify }) {
+            const [inputs, setInputs] = useState({ marca: '', total: '' });
+            const [brand, setBrand] = useState(GENERAL_BRANDS[0]);
+            const unitLabel = unitMode === 'cm' ? 'cm' : 'ganchos';
+            const result = useMemo(() => { const m = parseFloat(inputs.marca) || 0; const t = parseFloat(inputs.total) || 0; return (t > 0) ? (m / t) * 100 : 0; }, [inputs]);
+            
+            const generateReport = () => {
+                if (!inputs.marca || !inputs.total) return;
+                const text = `*Relatório SOS - ${brand}*\n\n📏 *Modo:* ${unitMode.toUpperCase()}\n📍 *Espaço ${brand}:* ${inputs.marca} ${unitLabel}\n🌍 *Total Categoria:* ${inputs.total} ${unitLabel}\n📊 *Share Atual:* ${formatSmart(result)}%\n\n${getTimestamp()}`;
+                copyToClipboard(text, onNotify);
+            };
+            return (
+                <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                    <Card>
+                        <div className="flex justify-between items-start mb-6"><div><h2 className="text-lg font-semibold text-white uppercase tracking-tight">Participação (SOS)</h2><p className="text-slate-400 text-sm">Cálculo de participação</p></div><DonutChart percentage={result} color="#06b6d4" /></div>
+                        <BrandSelect selected={brand} onChange={setBrand} options={GENERAL_BRANDS} />
+                        <div className="space-y-4"><SmartInput label={`Espaço ${brand}`} value={inputs.marca} onChange={(v) => setInputs({ ...inputs, marca: v })} unit={unitLabel} /><SmartInput label="Espaço Total Mundo" value={inputs.total} onChange={(v) => setInputs({ ...inputs, total: v })} unit={unitLabel} /></div>
+                    </Card>
+                    <ResultCard value={formatSmart(result)} suffix="%" label="Sua participação" description={`Porcentagem do espaço total ocupado por ${brand}.`} onCopy={generateReport} canCopy={inputs.marca && inputs.total} />
+                </div>
+            );
+        }
+
+        function MopModule({ unitMode, onNotify }) {
+            const [inputs, setInputs] = useState({ total: '', meta: '' });
+            const [brand, setBrand] = useState(GENERAL_BRANDS[0]);
+            const unitLabel = unitMode === 'cm' ? 'cm' : 'ganchos';
+            const rawResult = useMemo(() => { const t = parseFloat(inputs.total) || 0; const m = parseFloat(inputs.meta) || 0; return (t * (m / 100)); }, [inputs]);
+            
+            const generateReport = () => {
+                const text = `*Planejamento MOP - ${brand}*\n\n📏 *Modo:* ${unitMode.toUpperCase()}\n🌍 *Total Categoria:* ${inputs.total} ${unitLabel}\n🎯 *Objetivo:* ${inputs.meta}%\n🛠️ *Necessário para ${brand}:* ${formatSmart(rawResult)} ${unitLabel}\n\n${getTimestamp()}`;
+                copyToClipboard(text, onNotify);
+            };
+            return (
+                <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                    <Card>
+                        <div className="flex justify-between items-start mb-6"><div><h2 className="text-lg font-semibold text-white uppercase tracking-tight">MOP</h2><p className="text-slate-400 text-sm">objetivo em {unitMode === 'cm' ? 'centímetros' : 'ganchos'}</p></div><DonutChart percentage={parseFloat(inputs.meta) || 0} color="#818cf8" /></div>
+                        <BrandSelect selected={brand} onChange={setBrand} options={GENERAL_BRANDS} />
+                        <div className="space-y-4"><SmartInput label="Espaço Total Mundo" value={inputs.total} onChange={(v) => setInputs({ ...inputs, total: v })} unit={unitLabel} /><SmartInput label={`% Objetivo ${brand}`} value={inputs.meta} onChange={(v) => setInputs({ ...inputs, meta: v })} unit="%" /></div>
+                    </Card>
+                    <ResultCard value={formatSmart(rawResult)} suffix={unitLabel} label="QUANTIDADE NECESSÁRIA" description={`Quantidade necessária para ${brand} atingir o objetivo de share.`} highlightColor="text-indigo-400" onCopy={generateReport} canCopy={inputs.total && inputs.meta} />
+                </div>
+            );
+        }
+
+        function KbdsModule({ unitMode, onNotify, setUnitMode }) {
+            const [selectedKbd, setSelectedKbd] = useState(KBDS_TARGETS[0]);
+            const [inputs, setInputs] = useState({ cat: '', brandVal: '', manualTarget: '' });
+            const [channelCC, setChannelCC] = useState(false);
+            
+            const handleKbdChange = (e) => {
+                const kbd = KBDS_TARGETS.find(k => k.id === e.target.value);
+                setSelectedKbd(kbd);
+                if (kbd.unit !== 'manual' && kbd.unit !== unitMode) {
+                    setUnitMode(kbd.unit);
+                }
+                setChannelCC(false);
+            };
+
+            const targetVal = useMemo(() => {
+                if (selectedKbd.id === 'custom') return (parseFloat(inputs.manualTarget) || 0);
+                if (selectedKbd.id === 'gillette_masc' && channelCC) return 25;
+                return selectedKbd.target;
+            }, [selectedKbd, channelCC, inputs.manualTarget]);
+
+            const actualShare = useMemo(() => {
+                const c = parseFloat(inputs.cat) || 0;
+                const b = parseFloat(inputs.brandVal) || 0;
+                return (c > 0) ? (b / c) * 100 : 0;
+            }, [inputs]);
+
+            const gapVal = useMemo(() => {
+                const c = parseFloat(inputs.cat) || 0;
+                const necessary = c * (targetVal / 100);
+                const actual = parseFloat(inputs.brandVal) || 0;
+                return Math.max(0, necessary - actual);
+            }, [inputs, targetVal]);
+
+            const status = useMemo(() => {
+                if (!inputs.cat || !inputs.brandVal) return null;
+                return actualShare >= targetVal ? 'OK' : 'ABAIXO';
+            }, [actualShare, targetVal, inputs]);
+
+            const unitLabel = unitMode === 'cm' ? 'cm' : 'ganchos';
+
+            const generateReport = () => {
+                if (!inputs.cat || !inputs.brandVal) return;
+                const channelText = channelCC ? 'C&C' : 'Varejo';
+                const text = `*Relatório KBDS 2026 - ${selectedKbd.brand}*\n\n🏢 *Canal:* ${channelText}\n📋 *Categoria:* ${selectedKbd.category}\n📏 *Modo:* ${unitMode.toUpperCase()}\n🌍 *Total ${selectedKbd.brand}:* ${inputs.cat} ${unitLabel}\n📍 *Espaço ${selectedKbd.category}:* ${inputs.brandVal} ${unitLabel}\n🎯 *Objetivo:* ${formatSmart(targetVal)}%\n📊 *Share Atual:* ${formatSmart(actualShare)}%\n🚨 *Status:* ${status}\n${gapVal > 0 ? `🛠️ *Faltam:* ${formatSmart(gapVal)} ${unitLabel}` : '✅ *Meta Batida!*'}\n\n${getTimestamp()}`;
+                copyToClipboard(text, onNotify);
+            };
+
+            return (
+                <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                    <Card>
+                        <div className="flex justify-between items-start mb-6">
+                            <div>
+                                <h2 className="text-lg font-semibold text-white uppercase tracking-tight">Cálculo de KBDS</h2>
+                                <p className="text-slate-400 text-[11px] leading-tight">Compare sua execução</p>
+                            </div>
+                            <div className="flex flex-col items-end">
+                                <span className="text-[10px] text-slate-500 font-bold uppercase mb-1">Objetivo do KBD</span>
+                                <div className="text-2xl font-black text-emerald-400 tabular-nums animate-in zoom-in duration-300" key={targetVal}>{formatSmart(targetVal)}%</div>
+                                
+                                {selectedKbd.id === 'gillette_masc' && (
+                                    <div className="mt-2 animate-in fade-in zoom-in duration-300">
+                                        <button 
+                                            onClick={() => setChannelCC(!channelCC)}
+                                            className={`px-2 py-1 rounded-md text-[8px] font-black uppercase transition-all flex items-center gap-1 border ${channelCC ? 'bg-orange-600/90 text-white border-orange-500 shadow-md shadow-orange-500/10' : 'bg-black/40 text-slate-500 border-white/5 hover:border-white/10'}`}
+                                        >
+                                            <Store className="w-2.5 h-2.5 shrink-0" />
+                                            C&C {channelCC ? 'ATIVO' : ''}
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+
+                        <div className="mb-4">
+                            <label className="text-[10px] text-slate-500 font-bold uppercase block mb-1">Selecione o KBD desejado</label>
+                            <select value={selectedKbd.id} onChange={handleKbdChange} className="w-full bg-black/30 border border-white/10 rounded-xl px-4 py-3 text-white text-sm font-medium appearance-none outline-none focus:border-cyan-500">
+                                {KBDS_TARGETS.map(k => <option key={k.id} value={k.id}>{k.brand} - {k.category}</option>)}
+                            </select>
+                        </div>
+
+                        {selectedKbd.id === 'custom' && (
+                            <div className="mb-4 animate-in fade-in duration-300">
+                                <SmartInput label="Meta Personalizada (%)" value={inputs.manualTarget} onChange={(v) => setInputs({...inputs, manualTarget: v})} unit="%" />
+                            </div>
+                        )}
+
+                        <div className="space-y-4">
+                            <SmartInput label={`Total ${selectedKbd.brand}`} value={inputs.cat} onChange={(v) => setInputs({...inputs, cat: v})} unit={unitLabel} />
+                            <SmartInput label={`Espaço ${selectedKbd.category}`} value={inputs.brandVal} onChange={(v) => setInputs({...inputs, brandVal: v})} unit={unitLabel} />
+                        </div>
+
+                        {inputs.cat && inputs.brandVal && (
+                            <div className={`mt-4 p-4 rounded-2xl border flex flex-col gap-3 animate-in zoom-in duration-300 ${status === 'OK' ? 'bg-emerald-500/10 border-emerald-500/30' : 'bg-red-500/10 border-red-500/30'}`}>
+                                <div className="flex items-center justify-between">
+                                    <div>
+                                        <p className="text-[10px] font-bold uppercase text-slate-400 mb-1">Seu Share Atual</p>
+                                        <p className={`text-xl font-black tabular-nums ${status === 'OK' ? 'text-emerald-400' : 'text-red-400'}`}>{formatSmart(actualShare)}%</p>
+                                    </div>
+                                    <div className="text-right">
+                                        {gapVal > 0 ? (
+                                            <React.Fragment>
+                                                <p className="text-[10px] font-bold uppercase text-red-400/70 mb-1">FALTAM PARA OBJETIVO</p>
+                                                <p className="text-lg font-bold text-white tabular-nums">{formatSmart(gapVal)} <span className="text-xs">{unitLabel}</span></p>
+                                            </React.Fragment>
+                                        ) : (
+                                            <div className="flex items-center gap-2 text-emerald-400 font-bold">
+                                                <CheckCircle2 className="w-5 h-5" /> Meta Batida
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                                <div className="pt-2 border-t border-white/5 flex gap-2 items-start text-[9px] text-slate-400 leading-tight">
+                                    <AlertTriangle className="w-2.5 h-2.5 shrink-0 mt-0.5" />
+                                    <p>Não arredondamos o resultado. Verifique a execução. Se estiver tudo correto, pode prosseguir.</p>
+                                </div>
+                            </div>
+                        )}
+                    </Card>
+
+                    <ResultCard 
+                        value={formatSmart(actualShare)} 
+                        suffix="%" 
+                        label="Execução KBDS" 
+                        status={status}
+                        description={gapVal > 0 ? `Abaixo do objetivo de ${formatSmart(targetVal)}%. Adicione mais ${formatSmart(gapVal)} ${unitLabel} da marca.` : `Excelente! Você atingiu ou superou o objetivo oficial de ${formatSmart(targetVal)}%.`} 
+                        highlightColor={status === 'OK' ? 'text-emerald-400' : 'text-red-400'}
+                        onCopy={generateReport} 
+                        canCopy={inputs.cat && inputs.brandVal} 
+                    />
+                </div>
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>

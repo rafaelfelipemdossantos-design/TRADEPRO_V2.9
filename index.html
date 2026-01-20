@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TRADEPRO - Calculadora de Performance</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="./tradepro_logo.png">
+    <link rel="apple-touch-icon" href="./tradepro_logo.png">
+    
+    <!-- Meta Tags para PWA e SEO -->
+    <meta name="description" content="TRADEPRO - Calculadora avançada de performance para CKO, SOS, MOP e KBDS. Ferramenta profissional para análise de desempenho em tempo real.">
+    <meta name="keywords" content="TRADEPRO, calculadora, performance, CKO, SOS, MOP, KBDS">
+    <meta name="theme-color" content="#0f172a">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <style>
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        .animate-fade-in-up {
+            animation: fadeInUp 0.6s ease-out forwards;
+        }
+        
+        .animate-slide-in-right {
+            animation: slideInRight 0.6s ease-out forwards;
+        }
+        
+        .delay-100 { animation-delay: 0.1s; }
+        .delay-200 { animation-delay: 0.2s; }
+        .delay-300 { animation-delay: 0.3s; }
+        
+        body {
+            -webkit-tap-highlight-color: transparent;
+        }
+    </style>
+</head>
+<body class="bg-[#0f172a] text-white font-sans overflow-x-hidden">
+    <!-- Background Elements -->
+    <div class="fixed top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-0">
+        <div class="absolute top-[-10%] right-[-5%] w-96 h-96 bg-blue-600/20 rounded-full blur-3xl opacity-50 mix-blend-screen animate-pulse"></div>
+        <div class="absolute bottom-[-10%] left-[-10%] w-[500px] h-[500px] bg-cyan-600/10 rounded-full blur-3xl opacity-30 mix-blend-screen"></div>
+    </div>
+
+    <!-- Header -->
+    <header class="relative z-10 px-6 pt-12 pb-8">
+        <div class="max-w-6xl mx-auto">
+            <div class="flex items-center gap-4 mb-6 animate-fade-in-up">
+                <img src="./tradepro_logo.png" alt="TRADEPRO Logo" class="w-16 h-16 rounded-2xl shadow-lg shadow-cyan-500/25">
+                <div>
+                    <h1 class="text-4xl font-bold bg-gradient-to-r from-white to-slate-400 bg-clip-text text-transparent leading-tight">TRADEPRO</h1>
+                    <p class="text-cyan-400 font-medium text-sm">Calculadora de Performance</p>
+                </div>
+            </div>
+            <p class="text-slate-300 text-lg max-w-2xl animate-fade-in-up delay-100">
+                Ferramenta profissional para análise de desempenho em CKO, SOS, MOP e KBDS. Monitore métricas em tempo real e otimize seus resultados.
+            </p>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="relative z-10 px-6 py-12">
+        <div class="max-w-6xl mx-auto">
+            <!-- Features Grid -->
+            <section class="mb-16">
+                <h2 class="text-2xl font-bold mb-8 animate-fade-in-up delay-200">Recursos Principais</h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Feature 1 -->
+                    <div class="group bg-white/5 backdrop-blur-md p-6 rounded-2xl border border-white/10 hover:border-cyan-500/50 transition-all duration-300 hover:shadow-lg hover:shadow-cyan-500/10 animate-fade-in-up delay-100">
+                        <div class="w-12 h-12 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                            </svg>
+                        </div>
+                        <h3 class="text-lg font-bold mb-2">Análise em Tempo Real</h3>
+                        <p class="text-slate-400 text-sm">Monitore suas métricas de performance instantaneamente com dados atualizados.</p>
+                    </div>
+
+                    <!-- Feature 2 -->
+                    <div class="group bg-white/5 backdrop-blur-md p-6 rounded-2xl border border-white/10 hover:border-cyan-500/50 transition-all duration-300 hover:shadow-lg hover:shadow-cyan-500/10 animate-fade-in-up delay-200">
+                        <div class="w-12 h-12 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                            </svg>
+                        </div>
+                        <h3 class="text-lg font-bold mb-2">Múltiplas Métricas</h3>
+                        <p class="text-slate-400 text-sm">Suporte completo para CKO, SOS, MOP, KBDS e outras métricas personalizadas.</p>
+                    </div>
+
+                    <!-- Feature 3 -->
+                    <div class="group bg-white/5 backdrop-blur-md p-6 rounded-2xl border border-white/10 hover:border-cyan-500/50 transition-all duration-300 hover:shadow-lg hover:shadow-cyan-500/10 animate-fade-in-up delay-300">
+                        <div class="w-12 h-12 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </div>
+                        <h3 class="text-lg font-bold mb-2">Relatórios Detalhados</h3>
+                        <p class="text-slate-400 text-sm">Gere relatórios completos com análises profundas e insights acionáveis.</p>
+                    </div>
+
+                    <!-- Feature 4 -->
+                    <div class="group bg-white/5 backdrop-blur-md p-6 rounded-2xl border border-white/10 hover:border-cyan-500/50 transition-all duration-300 hover:shadow-lg hover:shadow-cyan-500/10 animate-fade-in-up delay-100">
+                        <div class="w-12 h-12 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path>
+                            </svg>
+                        </div>
+                        <h3 class="text-lg font-bold mb-2">Interface Intuitiva</h3>
+                        <p class="text-slate-400 text-sm">Design moderno e responsivo que funciona perfeitamente em qualquer dispositivo.</p>
+                    </div>
+
+                    <!-- Feature 5 -->
+                    <div class="group bg-white/5 backdrop-blur-md p-6 rounded-2xl border border-white/10 hover:border-cyan-500/50 transition-all duration-300 hover:shadow-lg hover:shadow-cyan-500/10 animate-fade-in-up delay-200">
+                        <div class="w-12 h-12 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </div>
+                        <h3 class="text-lg font-bold mb-2">Validação de Dados</h3>
+                        <p class="text-slate-400 text-sm">Sistema robusto de validação para garantir precisão em todos os cálculos.</p>
+                    </div>
+
+                    <!-- Feature 6 -->
+                    <div class="group bg-white/5 backdrop-blur-md p-6 rounded-2xl border border-white/10 hover:border-cyan-500/50 transition-all duration-300 hover:shadow-lg hover:shadow-cyan-500/10 animate-fade-in-up delay-300">
+                        <div class="w-12 h-12 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C9.589 12.938 10 12.077 10 11.25c0-1.933-1.716-3.5-3.833-3.5-2.117 0-3.833 1.567-3.833 3.5S4.716 14.75 6.833 14.75c.981 0 1.891-.266 2.684-.684m0 0a3.5 3.5 0 015.396 3.972m0 0H18.5a4 4 0 004-4V6a4 4 0 00-4-4h-1V4a6 6 0 00-6 6v1H9a6 6 0 00-6 6v7a4 4 0 004 4h7.5"></path>
+                            </svg>
+                        </div>
+                        <h3 class="text-lg font-bold mb-2">Compartilhamento Fácil</h3>
+                        <p class="text-slate-400 text-sm">Copie e compartilhe relatórios com um clique através de qualquer plataforma.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- CTA Section -->
+            <section class="mb-16 bg-gradient-to-r from-cyan-500/10 to-blue-600/10 backdrop-blur-md p-12 rounded-3xl border border-cyan-500/20 animate-fade-in-up delay-200">
+                <div class="flex flex-col md:flex-row items-center justify-between gap-8">
+                    <div>
+                        <h2 class="text-3xl font-bold mb-4">Pronto para Começar?</h2>
+                        <p class="text-slate-300 text-lg">Acesse a ferramenta completa e comece a analisar sua performance agora mesmo.</p>
+                    </div>
+                    <a href="./TRADEPRO_V2.3.PT.2.html" class="px-8 py-4 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-xl font-bold text-lg hover:shadow-lg hover:shadow-cyan-500/50 transition-all duration-300 hover:scale-105 whitespace-nowrap">
+                        Abrir Aplicativo
+                    </a>
+                </div>
+            </section>
+
+            <!-- Info Section -->
+            <section class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
+                <div class="bg-white/5 backdrop-blur-md p-8 rounded-2xl border border-white/10 animate-fade-in-up delay-100">
+                    <h3 class="text-xl font-bold mb-4 flex items-center gap-2">
+                        <svg class="w-6 h-6 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        Como Funciona
+                    </h3>
+                    <ol class="space-y-3 text-slate-300">
+                        <li class="flex gap-3">
+                            <span class="flex-shrink-0 w-6 h-6 bg-cyan-500 rounded-full flex items-center justify-center text-sm font-bold">1</span>
+                            <span>Selecione a métrica desejada (CKO, SOS, MOP ou KBDS)</span>
+                        </li>
+                        <li class="flex gap-3">
+                            <span class="flex-shrink-0 w-6 h-6 bg-cyan-500 rounded-full flex items-center justify-center text-sm font-bold">2</span>
+                            <span>Insira os dados de performance e metas</span>
+                        </li>
+                        <li class="flex gap-3">
+                            <span class="flex-shrink-0 w-6 h-6 bg-cyan-500 rounded-full flex items-center justify-center text-sm font-bold">3</span>
+                            <span>Visualize os resultados em tempo real</span>
+                        </li>
+                        <li class="flex gap-3">
+                            <span class="flex-shrink-0 w-6 h-6 bg-cyan-500 rounded-full flex items-center justify-center text-sm font-bold">4</span>
+                            <span>Gere e compartilhe relatórios profissionais</span>
+                        </li>
+                    </ol>
+                </div>
+
+                <div class="bg-white/5 backdrop-blur-md p-8 rounded-2xl border border-white/10 animate-fade-in-up delay-200">
+                    <h3 class="text-xl font-bold mb-4 flex items-center gap-2">
+                        <svg class="w-6 h-6 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m7 0a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        Métricas Suportadas
+                    </h3>
+                    <ul class="space-y-2 text-slate-300">
+                        <li class="flex items-center gap-2">
+                            <span class="text-cyan-400">✓</span>
+                            <span><strong>CKO</strong> - Check-out</span>
+                        </li>
+                        <li class="flex items-center gap-2">
+                            <span class="text-cyan-400">✓</span>
+                            <span><strong>SOS</strong> - Stock Out Situation</span>
+                        </li>
+                        <li class="flex items-center gap-2">
+                            <span class="text-cyan-400">✓</span>
+                            <span><strong>MOP</strong> - Moment of Purchase</span>
+                        </li>
+                        <li class="flex items-center gap-2">
+                            <span class="text-cyan-400">✓</span>
+                            <span><strong>KBDS</strong> - Key Brand Display System</span>
+                        </li>
+                        <li class="flex items-center gap-2">
+                            <span class="text-cyan-400">✓</span>
+                            <span><strong>Métricas Personalizadas</strong></span>
+                        </li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Footer -->
+            <footer class="border-t border-white/10 pt-12 pb-8 text-center text-slate-400 animate-fade-in-up delay-300">
+                <p class="mb-4">TRADEPRO © 2026 - Calculadora de Performance Profissional</p>
+                <p class="text-sm">Desenvolvido com precisão para otimizar seus resultados de negócio</p>
+            </footer>
+        </div>
+    </main>
+
+    <script>
+        // Smooth scroll behavior
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        });
+
+        // PWA Installation
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('./sw.js').catch(() => {});
+        }
+    </script>
+</body>
+</html>
