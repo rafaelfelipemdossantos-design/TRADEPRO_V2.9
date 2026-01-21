@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TRADEPRO V2.3 - Hub de Performance</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Configurações PWA -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0f172a">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="TradePro">
+    <link rel="apple-touch-icon" href="assets/logo.png">
+    <link rel="icon" type="image/png" href="assets/logo.png">
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .gradient-text { background: linear-gradient(135deg, #22d3ee 0%, #818cf8 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    </style>
+</head>
+<body class="bg-[#0f172a] text-white min-h-screen flex flex-col items-center justify-center p-6 overflow-x-hidden">
+
+    <div class="fixed top-0 left-0 w-full h-full -z-10">
+        <div class="absolute top-[-10%] right-[-10%] w-[500px] h-[500px] bg-cyan-600/10 rounded-full blur-[120px]"></div>
+        <div class="absolute bottom-[-10%] left-[-10%] w-[500px] h-[500px] bg-indigo-600/10 rounded-full blur-[120px]"></div>
+    </div>
+
+    <main class="max-w-4xl w-full text-center space-y-12">
+        <header class="space-y-4">
+            <div class="inline-block p-3 rounded-2xl bg-cyan-500/10 border border-cyan-500/20 mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-12 h-12 text-cyan-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="20" x2="12" y2="10"></line><line x1="18" y1="20" x2="18" y2="4"></line><line x1="6" y1="20" x2="6" y2="16"></line></svg>
+            </div>
+            <h1 class="text-5xl md:text-7xl font-black tracking-tight uppercase">
+                TRADE<span class="gradient-text">PRO</span> <span class="text-slate-500 text-3xl md:text-4xl">V2.3</span>
+            </h1>
+            <p class="text-slate-400 text-lg md:text-xl max-w-2xl mx-auto font-light">
+                A solução definitiva para cálculos de performance em campo. Preciso, rápido e otimizado para o seu dia a dia.
+            </p>
+        </header>
+
+        <section class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="glass p-6 rounded-3xl text-left group">
+                <div class="w-10 h-10 rounded-lg bg-pink-500/20 flex items-center justify-center text-pink-400 mb-4 transition-transform group-hover:scale-110">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>
+                </div>
+                <h3 class="text-xl font-bold mb-2">Penetração CKO</h3>
+                <p class="text-slate-400 text-sm">Analise a presença de marcas em checkouts e calcule a penetração total na loja.</p>
+            </div>
+
+            <div class="glass p-6 rounded-3xl text-left group">
+                <div class="w-10 h-10 rounded-lg bg-cyan-500/20 flex items-center justify-center text-cyan-400 mb-4 transition-transform group-hover:scale-110">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg>
+                </div>
+                <h3 class="text-xl font-bold mb-2">Share of Shelf (SOS)</h3>
+                <p class="text-slate-400 text-sm">Cálculo instantâneo de participação de gôndola em centímetros ou ganchos.</p>
+            </div>
+
+            <div class="glass p-6 rounded-3xl text-left group">
+                <div class="w-10 h-10 rounded-lg bg-indigo-500/20 flex items-center justify-center text-indigo-400 mb-4 transition-transform group-hover:scale-110">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+                </div>
+                <h3 class="text-xl font-bold mb-2">Planejamento MOP</h3>
+                <p class="text-slate-400 text-sm">Defina objetivos e descubra exatamente quanto espaço falta para atingir a meta.</p>
+            </div>
+
+            <div class="glass p-6 rounded-3xl text-left group">
+                <div class="w-10 h-10 rounded-lg bg-emerald-500/20 flex items-center justify-center text-emerald-400 mb-4 transition-transform group-hover:scale-110">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+                </div>
+                <h3 class="text-xl font-bold mb-2">Métricas KBDS 2026</h3>
+                <p class="text-slate-400 text-sm">Alinhado com as metas oficiais de 2026, com suporte a canais de Atacado e Varejo.</p>
+            </div>
+        </section>
+
+        <div class="pt-8">
+            <a href="TRADEPRO_V2.3.html" class="inline-flex items-center gap-3 bg-gradient-to-r from-cyan-500 to-indigo-600 hover:from-cyan-400 hover:to-indigo-500 text-white font-bold py-5 px-10 rounded-2xl shadow-2xl shadow-cyan-500/20 transform hover:scale-105 transition-all active:scale-95 text-xl uppercase tracking-widest">
+                Iniciar Ferramenta
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+            </a>
+            <p class="mt-6 text-slate-500 text-xs font-bold tracking-widest uppercase">Performance Calculator &middot; 2026</p>
+        </div>
+    </main>
+
+    <footer class="mt-auto py-8 text-slate-600 text-[10px] uppercase tracking-[0.2em]">
+        Desenvolvido para profissionais de Trade Marketing
+    </footer>
+
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(reg => console.log('Service Worker registrado!', reg))
+                    .catch(err => console.log('Erro ao registrar Service Worker', err));
+            });
+        }
+    </script>
+</body>
+</html>
